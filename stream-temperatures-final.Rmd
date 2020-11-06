@@ -1,0 +1,131 @@
+---
+title: Stream temperatures
+author: Charlotte Wickham
+output: pdf_document
+---
+
+```{r setup, message = FALSE}
+library(tidyverse)
+library(lubridate)
+# knitr::opts_chunk$set(fig.height = 3, fig.width = 6)
+```
+
+Explore stream temperatures for all sites.
+
+*This is an example of where we might end up*
+
+## Functions
+
+```{r}
+# Calculate useful data coverage summaries
+coverage_summary <- function(data){
+  data %>% 
+  summarise(
+    n_obs = n(),
+    n_days = n_distinct(date),
+    n_missing = sum(is.na(watertemp_mean_day))
+  )
+}
+```
+
+
+```{r}
+# Plot watertemp_day time series
+# Note this is the two argument version
+plot_temperature <- function(data, title){
+  data %>% 
+    ggplot(aes(date, watertemp_mean_day)) + 
+    geom_line(aes(color = watertemp_method)) +
+    scale_color_brewer("Method", palette = "Set2") +
+    labs(x = "", y = "Water temperature (C)",
+      title = title)
+}
+```
+
+## Data Import
+
+```{r, message = FALSE}
+streams <- read_csv("data/HT00441_v8.csv")
+names(streams) <- tolower(names(streams))
+```
+
+Filter to time period of interest, and set observations with anything other than "Accepted" quality to missing:
+```{r}
+streams <- streams %>%
+  filter(year(date) > 2000, year(date) < 2020) %>%   
+  mutate(
+    watertemp_mean_day = ifelse(watertemp_mean_flag != "A", 
+      NA, watertemp_mean_day)) %>% 
+  select(sitecode, date, watertemp_mean_day, watertemp_method) 
+```
+
+## Data coverage
+
+`coverage_summary()` will work on grouped data:
+```{r}
+streams %>% 
+  group_by(sitecode) %>% 
+  coverage_summary()
+```
+
+## Plots 
+
+One option is to apply the plot to all the data, then
+apply facetting to the resulting plot:
+```{r}
+streams %>% 
+  plot_temperature("All sites") +
+  facet_wrap(~ sitecode)
+```
+
+Alternatively, create and store all the plots with `rowwise()`:
+```{r}
+streams_with_plots <- streams %>% 
+  nest_by(sitecode) %>% 
+  rowwise() %>% 
+  mutate(plots = list(plot_temperature(data, sitecode)))
+```
+
+Display one plot:
+```{r}
+streams_with_plots$plots[[1]]
+```
+
+## Different ways to actually see all the plots
+
+(Also a survey of other iteration methods)
+
+purrrs `walk()` function:
+```{r}
+streams_with_plots %>% pull(plots) %>% walk(print)
+```
+
+dplyrs `group_walk()` function (this both creates and displays the plots):
+```{r, eval = FALSE}
+streams %>% 
+  group_by(sitecode) %>% 
+  group_walk(~ print(plot_temperature(.x, .y)))
+```
+
+A `for` loop:
+```{r, eval = FALSE}
+sitecodes <- unique(streams$sitecode)
+for (site in sitecodes){
+  site_data <- filter(streams, 
+    sitecode == site)
+  site_data %>% 
+    plot_temperature(site) %>% 
+    print()
+}
+```
+
+Or alternatively save plots as PNG files. With purrrs `walk2()`
+```{r}
+streams_with_plots %>% 
+  mutate(
+    plot_files = paste0("plots/", sitecode, ".png")
+  ) %>% 
+  with(walk2(plot_files, plots, ggsave))
+```
+
+

@@ -16,6 +16,8 @@ Explore stream temperatures for the sites:
 * GSMACK Andrews Mack Creek Gaging Station	 
 * GSWS01 Andrews Watershed 1 Gaging Station	  	
 
+*This is where we finished last time*
+
 ## Functions
 
 ```{r}
@@ -114,3 +116,10 @@ Plot site stream temperature over time:
 ```{r}
 gsws01 %>% plot_temperature()
 ```
+
+
+```{r}
+streams %>% 
+  nest_by(sitecode) 
+```
+
