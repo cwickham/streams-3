@@ -94,6 +94,12 @@ streams %>%
 
 **Does it work?** Run it and see.
 
+**Challenge**: How would you edit the code to work for all sites?
+
+```{r}
+
+```
+
 ---
 
 ## Plots
@@ -113,12 +119,20 @@ Take the same approach with plotting:
 
 Run the following code and explore `streams_nested`. You might like to look at it on the Console, or using `View()`.
 
-**How does `nest_by()` differ to `group_by()?**
-
 ```{r}
 streams_nested <- streams %>% 
   nest_by(sitecode) 
+streams_nested
 ```
+
+**How does `nest_by()` differ to `group_by()?**
+
+**Challenge** How could you look at the contents of one row of the `data` column?
+
+```{r}
+
+```
+
 
 ---
 
