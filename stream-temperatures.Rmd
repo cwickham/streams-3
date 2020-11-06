@@ -35,8 +35,7 @@ coverage_summary <- function(data){
 
 ```{r}
 # Plot watertemp_day time series
-plot_temperature <- function(data){
-  title <- data$sitecode[1]
+plot_temperature <- function(data, title){
   data %>% 
     ggplot(aes(date, watertemp_mean_day)) + 
     geom_line(aes(color = watertemp_method)) +
@@ -79,7 +78,7 @@ gslook %>% coverage_summary()
 
 Plot site stream temperature over time:
 ```{r}
-gslook %>% plot_temperature()
+gslook %>% plot_temperature("GSLOOK")
 ```
 
 ## GSMACK
@@ -96,7 +95,7 @@ gsmack %>% coverage_summary()
 ```
 Plot site stream temperature over time:
 ```{r}
-gsmack %>% plot_temperature()
+gsmack %>% plot_temperature("GSMACK")
 ```
 
 ## GSWS01
@@ -114,7 +113,7 @@ gsws01 %>% coverage_summary()
 
 Plot site stream temperature over time:
 ```{r}
-gsws01 %>% plot_temperature()
+gsws01 %>% plot_temperature("GSWS01")
 ```
 
 
