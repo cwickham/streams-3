@@ -16,7 +16,7 @@ Explore stream temperatures for the sites:
 * GSMACK Andrews Mack Creek Gaging Station	 
 * GSWS01 Andrews Watershed 1 Gaging Station	  	
 
-*This is where we finished last time*
+*This is where we finished last time, but reorganized to group the operations.  I've also added spots for the breakout room activities.*
 
 ## Functions
 
@@ -63,62 +63,72 @@ streams <- streams %>%
   select(sitecode, date, watertemp_mean_day, watertemp_method) 
 ```
 
-## GSLOOK
+## Site Subsets
 
-Get site data:
 ```{r}
 gslook <- streams %>% 
   filter(sitecode == "GSLOOK")
-```
-
-Checks on data quality/coverage:
-```{r}
-gslook %>% coverage_summary()
-```
-
-Plot site stream temperature over time:
-```{r}
-gslook %>% plot_temperature("GSLOOK")
-```
-
-## GSMACK
-
-Get site data:
-```{r}
 gsmack <- streams %>% 
   filter(sitecode == "GSMACK")
-```
-
-Checks on data quality/coverage:
-```{r}
-gsmack %>% coverage_summary()
-```
-Plot site stream temperature over time:
-```{r}
-gsmack %>% plot_temperature("GSMACK")
-```
-
-## GSWS01
-
-Get site data:
-```{r}
 gsws01 <- streams %>% 
   filter(sitecode == "GSWS01")
 ```
 
-Checks on data quality/coverage:
+## Coverage Summaries
+
 ```{r}
+gslook %>% coverage_summary()
+gsmack %>% coverage_summary()
 gsws01 %>% coverage_summary()
 ```
 
-Plot site stream temperature over time:
+### Breakout Room Activity #1
+
+**Discuss** the following code, e.g. in words what does it do?:
 ```{r}
+streams %>% 
+  filter(sitecode %in% c("GSLOOK", "GSMACK","GSWS01")) %>% 
+  group_by(sitecode) %>% 
+  coverage_summary()
+```
+
+**Does it work?** Run it and see.
+
+---
+
+## Plots
+
+```{r}
+gslook %>% plot_temperature("GSLOOK")
+gsmack %>% plot_temperature("GSMACK")
 gsws01 %>% plot_temperature("GSWS01")
 ```
 
+Take the same approach with plotting:
+```{r}
+
+```
+
+### Breakout Room Activity #2
+
+Run the following code and explore `streams_nested`. You might like to look at it on the Console, or using `View()`.
+
+**How does `nest_by()` differ to `group_by()?**
 
 ```{r}
-streams %>% 
+streams_nested <- streams %>% 
   nest_by(sitecode) 
+```
+
+---
+
+Combine with `rowwise()`:
+```{r}
+
+```
+
+Look at a plot:
+```{r}
+
 ```
 
